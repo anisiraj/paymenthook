@@ -9,12 +9,18 @@ class TransactionODM(TransactionNotification,Document):
    class Settings:
       name=transaction_collection_name
       
+class ReportODM(Report,Document):
+   class Settings:
+      name=report_collection_name    
+      
+      
       
 async def init_db():
     client = motor.motor_asyncio.AsyncIOMotorClient(
        mongo_uri
     )
-    await init_beanie(database=client[mongo_db_name], document_models=[TransactionODM])
+    await init_beanie(database=client[mongo_db_name], document_models=[TransactionODM,ReportODM])
+ 
     
 async def insert_transaction(transaction_notification:TransactionNotification):
    """_summary_
@@ -54,12 +60,15 @@ async def update_payment_segment(payout:PayOutSegment):
    else:
       raise Exception("Transaction not found")
       
-      
-     
-   
+async def insert_report(report:Report):
+   """_summary_
 
-   
-      
-   
+   Args:
+       report (Report): _description_
+   """
+   #convert to ODM, we have one to one map given the inheritence model
+   print("publishing report")
+   report=ReportODM(**report.model_dump())   
+   #todo have an upsert function based on date
+   await ReportODM.insert_one(report)      
   
-   

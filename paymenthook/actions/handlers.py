@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from paymenthook.models.definitions import TransactionNotification,Report,PayOutSegment
 from paymenthook.data.async_mongo_controller import (
     insert_transaction,
-    update_payment_segment
+    update_payment_segment,
+    insert_report
     )
 
 class BaseEntityHandler:  
@@ -26,7 +27,7 @@ class LogPublisher(BaseEntityHandler):
     
     """
     target_type=Any
-    async def run(self,target:Any,**kwargs) :
+    async def run(self,target:Any) :
         print(target)
         
 class PropagationPublisher(BaseEntityHandler):
@@ -66,9 +67,12 @@ class PaymentSegmentPublisher(BaseEntityHandler):
    
 class ReportPublisher(BaseEntityHandler):
     async def run(self,target:Any) :
-       raise NotImplementedError("SQLPublisher is not implemented")
+        await  insert_report(target)
+       
    
 class ReportReconciliationHandler(BaseEntityHandler):
     async def run(self,target:Any) :
-       raise NotImplementedError("SQLPublisher is not implemented")
+        print("Reconciling report")
+       
+       
     
