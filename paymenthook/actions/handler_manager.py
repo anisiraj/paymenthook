@@ -25,9 +25,13 @@ class HandlerManager:
         self.path_dict[path].append(handler)
         
     async def dispatch(self,path,target:Any)->asyncio.Future[tuple] :      
-        return asyncio.gather(*[handler.run(target) for handler in self.path_dict[path]],return_exceptions=True)
+        return asyncio.gather(*[handler.dispatch(target) for handler in self.path_dict[path]],return_exceptions=True)
     
-    
+    def process(result:tuple) :
+        """
+        Processes the results of the dispatch
+        """
+        raise NotImplementedError("process is not implemented")
     
 def get_dummy_handler_manager()->HandlerManager:
     h=HandlerManager()

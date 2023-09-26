@@ -9,16 +9,50 @@ from paymenthook.data.async_mongo_controller import (
 
 class BaseEntityHandler:  
     
-    @abstractmethod
-    async def run(self,target:Any,**kwargs) :  
+    
+    async def dispatch(self,target:Any,**kwargs) -> Any:
         """
         This is the main function that is called by the handler manager
         kwargs: will pass any runtime parameters to the handler
         target: will be the object that is passed to the handler
         
         """  
+        
+        try:
+            result= await self.run(target,**kwargs)
+            return self.onCompletion(result)
+        except Exception as e:
+            return self.onError(e)
+            
+    
+    @abstractmethod
+    async def run(self,target:Any,**kwargs) :  
+        """
+        This is the main function that is defined for task
+        kwargs: will pass any runtime parameters to the handler
+        target: will be the object that is passed to the handler
+        
+        """  
        
         pass
+        
+    def onCompletion(self,result:Any):
+        """
+        This is a callback function that is called after the run function is completed
+        """
+        return {"done":True}
+        
+        
+    def onError(self,error:Any):
+        """
+        This is a default callback function that is called after the run throws an exception
+        feel free to override this function
+        """
+        return {"error":str(error),
+            }
+    
+    
+    
     
 class LogPublisher(BaseEntityHandler):    
     
