@@ -2,7 +2,7 @@
 import sys
 sys.path.append("../")
 
-from paymenthook.data.async_mongo_controller import init_db,TransactionODM
+from paymenthook.data.async_mongo_controller import init_db,TransactionODM,insert_transaction,update_payment_segment
 from paymenthook.models.definitions import TransactionNotification,Report,PayOutSegment
 
 
@@ -24,13 +24,15 @@ payout_data={
 }
 
 async def test():     
-    await init_db()
-   
+    await init_db()  
+    
     
     p=PayOutSegment(**payout_data)
+    print(p)
+    await update_payment_segment(p)
     
-    await TransactionODM.find_one(TransactionODM.transaction_id==p.transaction_id).\
-        update ({"$set": {TransactionODM.seller_split: p}})
+    
+   
 if __name__=="__main__":
     import asyncio
     asyncio.run(test())

@@ -1,10 +1,14 @@
-from pydantic  import BaseModel,Field
+from pydantic  import BaseModel,Field,AliasChoices
 import datetime 
 import enum 
-from typing import List
+from typing import List,Optional
 
 prefab_fields = {
-    "transaction_id":Field(validation_alias="Psp Reference"),
+    "transaction_id":Field(
+        validation_alias=AliasChoices(
+            "Psp Reference","transaction_id"
+            )
+        ),
     "merchant_id":Field(validation_alias="Merchant Account"),  
     "timestamp":Field(default_factory=datetime.datetime.now)  
 }
@@ -31,9 +35,9 @@ class PayOutSegment(BaseTransactionInfo) :
 class TransactionNotification(BaseTransactionInfo):  
     merchant_id:str=prefab_fields["merchant_id"] 
     transaction_type:TrasnactionType
-    seller_split:PayOutSegment=None
-    valpay_split:PayOutSegment=None
-    fee_split:PayOutSegment=None
+    seller_split:Optional[PayOutSegment]=None
+    valpay_split:Optional[PayOutSegment]=None
+    fee_split:Optional[PayOutSegment]=None
   
     
 class ReportRow(BaseTransactionInfo) :  
